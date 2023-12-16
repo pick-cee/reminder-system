@@ -1,0 +1,7 @@
+{
+    "prettier.enable": true,
+    "prettier.tabWidth": 4,
+    "prettier.useTabs": true,
+    "javascript.format.insertSpaceAfterConstructor": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": true
+}
