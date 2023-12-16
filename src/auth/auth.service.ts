@@ -22,8 +22,9 @@ export class AuthService {
         if (user) {
             throw new BadRequestException('Email already exists, please sign in')
         }
-        (await this.userModel.create({ ...signUp })).save()
-        return signUp
+        const hash = await argon.hash(signUp.password)
+        return await this.userModel.create({ ...signUp, password: hash })
+
     }
 
     async logIn(logIn: LogInDto) {
