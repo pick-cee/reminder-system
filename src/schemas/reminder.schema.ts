@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import * as mongoose from 'mongoose'
 import { Transform } from "class-transformer";
-import { IsString, IsOptional, IsDate } from "class-validator";
+import { IsString, IsOptional, IsDate, IsMongoId } from "class-validator";
 import { Reminder } from "src/interfaces";
+import { ObjectId } from "mongodb";
 
 
 @Schema({ collection: 'Reminder', timestamps: true })
@@ -10,11 +12,12 @@ export class ReminderModel implements Reminder {
     _id: string;
 
     @Prop({
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     })
-    @IsString()
-    user: string;
+    @IsMongoId()
+    user: ObjectId;
 
     @Prop({
         type: String,
@@ -41,4 +44,4 @@ export class ReminderModel implements Reminder {
 }
 
 export type ReminderDocument = ReminderModel & Document
-export const UserSchema = SchemaFactory.createForClass(ReminderModel)
+export const ReminderSchema = SchemaFactory.createForClass(ReminderModel)

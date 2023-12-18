@@ -1,6 +1,8 @@
+import { ObjectId } from "mongodb"
+
 export interface Reminder {
     _id: string
-    user: string
+    user: ObjectId
     details: string
     date: string | Date
     createdAt: string | Date
