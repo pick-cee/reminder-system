@@ -1,9 +1,11 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateReminder, UpdateReminder } from 'src/interfaces';
 import { UserDocument, UserModel } from 'src/schemas';
 import { ReminderModel } from 'src/schemas/reminder.schema';
+import { Cache } from 'cache-manager';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class ReminderService {
     constructor(
         @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
         @InjectModel(ReminderModel.name) private reminderModel: Model<ReminderModel>,
+        @Inject(CACHE_MANAGER) private cacheManagaer: Cache,
         private userSvc: UserService
     ) { }
 
@@ -21,8 +24,13 @@ export class ReminderService {
     }
 
     async getAllForUsers(userId: any) {
-        this.logger.log(await this.userSvc.getProfile(userId))
+        const value = await this.cacheManagaer.get('reminders-for-users')
+        if (value) {
+            this.logger.log(value)
+            return value
+        }
         const reminders = await this.reminderModel.find({ user: userId })
+        await this.cacheManagaer.set('reminders-for-users', reminders)
         return reminders
     }
 
