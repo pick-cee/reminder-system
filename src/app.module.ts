@@ -6,11 +6,23 @@ import { AuthModule } from "./auth/auth.module";
 import { ReminderModule } from "./reminder/reminder.module";
 import { CacheModule } from "@nestjs/cache-manager";
 import { redisOptions } from "./redis/redisOptions";
-import { redisStore } from "cache-manager-redis-store";
+import { BullModule } from "@nestjs/bull";
+import { AuthConsumer } from "./auth/auth.consumer";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        return {
+          redis: {
+            host: config.get('REDIS_HOST'),
+            port: config.get("REDIS_PORT")
+          }
+        }
+      }
+    }),
     CacheModule.register(redisOptions),
     MongooseModule.forRootAsync({
       useFactory: async (config: ConfigService) => {

@@ -7,6 +7,8 @@ import { LogInDto } from 'src/DTO';
 import { CreateUser } from 'src/interfaces';
 import { UserDocument, UserModel } from 'src/schemas';
 import * as argon from 'argon2'
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,8 @@ export class AuthService {
         @InjectModel(UserModel.name)
         private userModel: Model<UserDocument>,
         private jwt: JwtService,
-        private config: ConfigService
+        private config: ConfigService,
+        @InjectQueue('user') private userQueue: Queue
     ) { }
 
     async signUp(signUp: CreateUser) {
@@ -36,6 +39,7 @@ export class AuthService {
         if (!pwMatches) {
             throw new ForbiddenException("Password incorrect")
         }
+        const job = await this.userQueue.add('lastlogin', { firstName: user.firstName, email: user.email, _id: user._id })
         delete user.password
         return this.signToken(user._id, user.email, user.firstName)
     }

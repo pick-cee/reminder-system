@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "2": "^3.0.0",
+    "@nestjs/bull": "^10.0.1",
     "@nestjs/cache-manager": "^2.1.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
@@ -35,6 +36,7 @@
     "argon": "^2.0.21",
     "argon2": "^0.31.2",
     "bcrypt": "^5.1.1",
+    "bull": "^4.12.0",
     "cache-manager": "^5.3.2",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",

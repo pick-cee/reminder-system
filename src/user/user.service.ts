@@ -4,11 +4,14 @@ import { Model } from 'mongoose';
 import { UpdateUser } from 'src/interfaces';
 import { UserDocument, UserModel } from 'src/schemas';
 import * as argon from 'argon2'
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(UserModel.name) private userModel: Model<UserDocument>
+        @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+        @InjectQueue('user') private userQueue: Queue
     ) { }
 
     async getProfile(userId: any) {
