@@ -57,7 +57,7 @@ export class ReminderConsumer {
                     email: user.email
                 },
                 payload: {
-                    firstName: user.firstName,
+                    firstname: user.firstName,
                     reminderDetails: reminder.details
                 }
             })
