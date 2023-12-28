@@ -7,11 +7,12 @@ import { ReminderModule } from "./reminder/reminder.module";
 import { CacheModule } from "@nestjs/cache-manager";
 import { redisOptions } from "./redis/redisOptions";
 import { BullModule } from "@nestjs/bull";
-import { AuthConsumer } from "./auth/auth.consumer";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {

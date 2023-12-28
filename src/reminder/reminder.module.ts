@@ -6,6 +6,7 @@ import { UserModel, UserSchema } from 'src/schemas';
 import { UserService } from 'src/user/user.service';
 import { ReminderModel, ReminderSchema } from 'src/schemas/reminder.schema';
 import { BullModule } from '@nestjs/bull';
+import { ReminderConsumer } from './reminder.consumer';
 
 @Module({
   imports: [
@@ -13,9 +14,9 @@ import { BullModule } from '@nestjs/bull';
       { name: UserModel.name, schema: UserSchema },
       { name: ReminderModel.name, schema: ReminderSchema }
     ]),
-    BullModule.registerQueue({ name: 'user' })
+    BullModule.registerQueue({ name: 'user' }, { name: 'reminder' }),
   ],
   controllers: [ReminderController],
-  providers: [ReminderService, UserService],
+  providers: [ReminderService, UserService, ReminderConsumer],
 })
 export class ReminderModule { }

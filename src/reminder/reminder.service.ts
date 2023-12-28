@@ -7,6 +7,8 @@ import { UserDocument, UserModel } from 'src/schemas';
 import { ReminderModel } from 'src/schemas/reminder.schema';
 import { Cache } from 'cache-manager';
 import { UserService } from 'src/user/user.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class ReminderService {
@@ -15,12 +17,16 @@ export class ReminderService {
         @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
         @InjectModel(ReminderModel.name) private reminderModel: Model<ReminderModel>,
         @Inject(CACHE_MANAGER) private cacheManagaer: Cache,
-        private userSvc: UserService
+        private userSvc: UserService,
+        @InjectQueue('reminder') private reminderQueue: Queue,
     ) { }
 
     async createReminder(userId: any, reminderDto: CreateReminder) {
-        this.logger.log(await this.userSvc.getProfile(userId))
-        return await this.reminderModel.create({ ...reminderDto, user: userId })
+        const newReminder = await this.reminderModel.create({ ...reminderDto, user: userId })
+        const Queue = await this.reminderQueue.add('reminder-notification',
+            { user: userId, details: reminderDto.details, date: reminderDto.date, _id: newReminder._id })
+        this.logger.log
+        return newReminder
     }
 
     async getAllForUsers(userId: any) {

@@ -9,24 +9,35 @@ import { UserDocument, UserModel } from 'src/schemas';
 import * as argon from 'argon2'
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { Novu } from '@novu/node';
+
+
 
 @Injectable()
 export class AuthService {
+    novu = new Novu(`${process.env.NOVU_API_KEY}`)
     constructor(
         @InjectModel(UserModel.name)
         private userModel: Model<UserDocument>,
         private jwt: JwtService,
         private config: ConfigService,
-        @InjectQueue('user') private userQueue: Queue
+        @InjectQueue('user') private userQueue: Queue,
     ) { }
 
     async signUp(signUp: CreateUser) {
+
         const user = await this.userModel.findOne({ email: signUp.email }).exec()
         if (user) {
             throw new BadRequestException('Email already exists, please sign in')
         }
         const hash = await argon.hash(signUp.password)
-        return await this.userModel.create({ ...signUp, password: hash })
+        const newUser = await this.userModel.create({ ...signUp, password: hash })
+        await this.novu.subscribers.identify(newUser._id, {
+            email: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName
+        })
+        return newUser
 
     }
 

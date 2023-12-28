@@ -12,7 +12,7 @@ import { AuthConsumer } from "./auth.consumer";
   imports: [
     MongooseModule.forFeature([{ name: UserModel.name, schema: UserSchema }]),
     JwtModule.register({}),
-    BullModule.registerQueue({ name: 'user' })
+    BullModule.registerQueue({ name: 'user' }, { name: 'reminder' }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwTStrategy, AuthConsumer],
