@@ -6,8 +6,7 @@ import { Job } from "bull";
 import { Model } from "mongoose";
 import { UserDocument, UserModel } from "src/schemas";
 import { ReminderDocument, ReminderModel } from "src/schemas/reminder.schema";
-import cron from 'node-cron'
-import { Cron, SchedulerRegistry } from "@nestjs/schedule";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { CronJob } from "cron";
 
 @Processor('reminder')
@@ -21,17 +20,6 @@ export class ReminderConsumer {
         private reminderModel: Model<ReminderDocument>,
         private readonly scheduleRegistry: SchedulerRegistry
     ) { }
-
-    // addNewJob(jobName: string, cronExpression: string) {
-    //     const job = new CronJob(`${cronExpression}`, () => {
-
-    //     })
-
-    //     this.scheduleRegistry.addCronJob(jobName, job);
-    //     job.start();
-
-    //     console.log(`Job ${name} added for every ${cronExpression} seconds`)
-    // }
 
     @Process('reminder-notification')
     async reminderNotification(job: Job) {
